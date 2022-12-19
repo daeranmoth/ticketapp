@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema(
     },
   }
 );
-
+//required in order to hash the password before saving it in mongodb
 userSchema.pre("save", async function (done) {
   if (this.isModified("password")) {
     const hashed = await Password.toHash(this.get("password"));
@@ -51,7 +51,7 @@ userSchema.pre("save", async function (done) {
   }
   done();
 });
-
+//build function to allow typescript to do type checking
 userSchema.statics.build = (attrs: UserAttrs) => {
   return new User(attrs);
 };

@@ -19,7 +19,7 @@ beforeAll(async () => {
     useUnifiedTopology: true,
   });
 });
-
+//before each test we delete all the records in mongodb
 beforeEach(async () => {
   const collections = await mongoose.connection.db.collections();
 
@@ -38,7 +38,10 @@ afterAll(async () => {
 //we must fake a cookie with a valid JWT inside it
 global.signin = () => {
   //build a JWT payload {id, email}
-  const payload = { id: "15df4dg4g5", email: "test@test.com" };
+  const payload = {
+    id: new mongoose.Types.ObjectId().toHexString(), //generate a random id
+    email: "test@test.com",
+  };
   //create the JWT
   const token = jwt.sign(payload, process.env.JWT_KEY!);
   //build session Object {jwt: MY_JWT}
