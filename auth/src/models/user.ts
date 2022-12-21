@@ -11,7 +11,7 @@ interface UserAttrs {
 // An interface that describes the properties
 // that a User Model has
 interface UserModel extends mongoose.Model<UserDoc> {
-  build(attrs: UserAttrs): UserDoc;
+  build(attrs: UserAttrs): UserDoc; //to allow typescript to do types validation
 }
 
 // An interface that describes the properties
