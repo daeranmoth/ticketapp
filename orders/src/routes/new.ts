@@ -4,12 +4,16 @@ import {
   requireAuth,
   validateRequest,
   NotFoundError,
+  OrderStatus,
+  BadRequestError,
 } from "@gcticketapp/common";
 import { body } from "express-validator";
 import { Ticket } from "../models/ticket";
 import { Order } from "../models/order";
 
 const router = express.Router();
+
+const EXPIRATION_WINDOW_SECONDS = 15 * 60;
 
 router.post(
   "/api/orders",
@@ -29,15 +33,25 @@ router.post(
     if (!ticket) {
       throw new NotFoundError();
     }
-    //verify that the ticket is not already reserved
-
+    //verify that the ticket is not already reserved(status everything expect cancelled)
+    const isReserved = await ticket.isReserved();
+    if (isReserved) {
+      throw new BadRequestError("Ticket already reserved");
+    }
     //calculate a reservation timeframe for this order
-
+    const expiration = new Date();
+    expiration.setSeconds(expiration.getSeconds() + EXPIRATION_WINDOW_SECONDS);
     //Build the order and save it to database
-
+    const order = Order.build({
+      userId: req.currentUser!.id,
+      status: OrderStatus.Created,
+      expiresAt: expiration,
+      ticket,
+    });
+    await order.save();
     //Publish an event order created
 
-    res.send({});
+    res.status(201).send(order);
   }
 );
 

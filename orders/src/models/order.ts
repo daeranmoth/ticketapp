@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import { OrderStatus } from "@gcticketapp/common";
 import { TicketDoc } from "./ticket";
+
+export { OrderStatus };
+
 // An interface that describes the properties
 // that are requried to create a new User
 interface OrderAttrs {
