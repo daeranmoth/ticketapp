@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import { app } from "./app";
 import { natsWrapper } from "./nats-wrapper";
+import { OrderCreatedListener } from "./events/listeners/order-created-listener";
+import { OrderCancelledListener } from "./events/listeners/order-cancelled-listener";
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -19,6 +21,7 @@ const start = async () => {
     throw new Error("NATS_URL must be defined");
   }
 
+  //initialize nats connections
   try {
     await natsWrapper.connect(
       process.env.NATS_CLUSTER_ID,
@@ -33,6 +36,11 @@ const start = async () => {
     process.on("SIGINT", () => natsWrapper.client.close()); // interupt signal => close nats connection
     process.on("SIGTERM", () => natsWrapper.client.close()); //terminate signal => close nats connection
 
+    //initialize the events listeners
+    new OrderCreatedListener(natsWrapper.client).listen();
+    new OrderCancelledListener(natsWrapper.client).listen();
+
+    //initialize databases connections
     await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -42,7 +50,7 @@ const start = async () => {
   } catch (err) {
     console.error(err);
   }
-
+  //initialize node server
   app.listen(3000, () => {
     console.log("Listening on port 3000!!!");
   });
