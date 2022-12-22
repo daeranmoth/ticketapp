@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 import { OrderStatus } from "@gcticketapp/common";
 import { TicketDoc } from "./ticket";
 
 export { OrderStatus };
 
 // An interface that describes the properties
-// that are requried to create a new User
+// that are requried to create a new Order
 interface OrderAttrs {
   userId: string;
   status: OrderStatus;
@@ -20,6 +21,7 @@ interface OrderDoc extends mongoose.Document {
   status: OrderStatus;
   expiresAt: Date;
   ticket: TicketDoc;
+  version: number;
 }
 
 // An interface that describes the properties
@@ -57,6 +59,9 @@ const orderSchema = new mongoose.Schema(
     },
   }
 );
+
+orderSchema.set("versionKey", "version");
+orderSchema.plugin(updateIfCurrentPlugin);
 //build function to allow typescript to do type checking
 orderSchema.statics.build = (attrs: OrderAttrs) => {
   return new Order(attrs);

@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import request from "supertest";
 import { app } from "../../app";
 import { Ticket } from "../../models/ticket";
@@ -5,6 +6,7 @@ import { Ticket } from "../../models/ticket";
 it("fetches the order", async () => {
   //create a ticket
   const ticket = Ticket.build({
+    id: mongoose.Types.ObjectId().toHexString(),
     title: "concert",
     price: 21,
   });
@@ -30,6 +32,7 @@ it("fetches the order", async () => {
 it("returns an error if one user tries to fetch another user order", async () => {
   //create a ticket
   const ticket = Ticket.build({
+    id: mongoose.Types.ObjectId().toHexString(),
     title: "concert",
     price: 21,
   });

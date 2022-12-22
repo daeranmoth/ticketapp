@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
-// An interface that describes the properties
-// that are requried to create a new User
+// Attibutes required to create a new Ticket
 interface TicketAttrs {
   title: string;
   price: number;
@@ -9,15 +9,16 @@ interface TicketAttrs {
 }
 
 // An interface that describes the properties
-// that a User Document has
+// that a Ticket Document has
 interface TicketDoc extends mongoose.Document {
   title: string;
   price: number;
   userId: string;
+  version: number;
 }
 
 // An interface that describes the properties
-// that a User Model has
+// that a Ticket Model has
 interface TicketModel extends mongoose.Model<TicketDoc> {
   build(attrs: TicketAttrs): TicketDoc;
 }
@@ -29,7 +30,7 @@ const ticketSchema = new mongoose.Schema(
       required: true,
     },
     price: {
-      type: Number,
+      type: Number, //global number constructor in javascript
       required: true,
     },
     userId: {
@@ -46,8 +47,11 @@ const ticketSchema = new mongoose.Schema(
     },
   }
 );
+//this mongoose plugin is to handle Optimistic Concurrency Control
+ticketSchema.set("versionKey", "version");
+ticketSchema.plugin(updateIfCurrentPlugin);
 
-//build function to allow typescript to do type checking
+//build function to allow typescript to do is job (type checking)
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
   return new Ticket(attrs);
 };
