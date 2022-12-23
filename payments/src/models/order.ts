@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 import { OrderStatus } from "@gcticketapp/common";
 
 interface OrderAttrs {
@@ -44,6 +45,9 @@ const orderSchema = new mongoose.Schema(
     },
   }
 );
+// overide mongoose to not use his __v flag
+orderSchema.set("versionKey", "version");
+orderSchema.plugin(updateIfCurrentPlugin);
 
 orderSchema.statics.build = (attrs: OrderAttrs) => {
   return new Order({
