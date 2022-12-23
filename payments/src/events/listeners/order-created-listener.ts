@@ -17,9 +17,9 @@ export class OrderCreatedListener extends Listener<OrderCreatedEvent> {
       version: data.version,
     });
     // if no order exists, throw an error
-    if (!order) {
-      throw new Error("order not found");
-    }
+    // if (!order) {
+    //   throw new Error("order not found");
+    // }
 
     // Save the order
     await order.save();
