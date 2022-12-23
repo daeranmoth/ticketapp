@@ -69,10 +69,9 @@ ticketSchema.statics.build = (attrs: TicketAttrs) => {
 };
 //we add the isReserved method to Ticket
 ticketSchema.methods.isReserved = async function () {
-  //this === ticket doc that we just called 'isReserved' on
   //verify that the ticket is not already reserved(status everything expect cancelled)
   const existingOrder = await Order.findOne({
-    ticket: this.id,
+    ticket: this.id, //this === ticket doc that we just called 'isReserved' on
     status: {
       $in: [
         OrderStatus.Created,
